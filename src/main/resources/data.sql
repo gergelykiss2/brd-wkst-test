@@ -6,8 +6,8 @@ VALUES (1, 'SUF131', 'Ford', 'Focus', 'DIESEL', 'AVAILABLE', NOW(), NOW()),
        (5, 'SBA345', 'Ford', 'Focus Combi', 'DIESEL', 'AVAILABLE', NOW(), NOW());
 
 INSERT INTO USER
-VALUES (1, 'Teszt', 'Elek', 'teszt.elek@example.com', '1980-01-01', NULL, NULL, 1, NOW(), NOW()),
-       (2, 'Teszt', 'Elekne', 'teszt.elekne@example.com', '1982-01-01', NULL, NULL, 1, NOW(), NOW());
+VALUES (1, 'Test', 'User 1', 'test.user1@example.com', '1980-01-01', NULL, NULL, 1, NOW(), NOW()),
+       (2, 'Test', 'User 2', 'teszt.user2@example.com', '1982-01-01', NULL, NULL, 1, NOW(), NOW());
 
 INSERT INTO RESERVATION
 VALUES (1, '2021-10-01', '2021-10-02', 'BOOKED', 'WORK', 1, 1, NOW(), NOW()),

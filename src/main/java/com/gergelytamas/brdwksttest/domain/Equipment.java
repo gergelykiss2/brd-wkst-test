@@ -2,6 +2,7 @@ package com.gergelytamas.brdwksttest.domain;
 
 import com.sun.istack.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ import java.util.Set;
         name = "equipment_id_seq_gen",
         sequenceName = "equipment_id_seq",
         allocationSize = 1)
+@NoArgsConstructor
 public class Equipment extends BaseEntity implements Serializable {
 
     @NotNull
@@ -25,4 +27,10 @@ public class Equipment extends BaseEntity implements Serializable {
 
     @ManyToMany(mappedBy = "equipments")
     private Set<Car> cars = new HashSet<>();
+
+    public Equipment(final Long id, final String description, final Set<Car> cars) {
+        super();
+        this.description = description;
+        this.cars = cars;
+    }
 }

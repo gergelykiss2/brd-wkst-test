@@ -1,11 +1,11 @@
 package service;
 
 import com.gergelytamas.brdwksttest.domain.Car;
+import com.gergelytamas.brdwksttest.domain.Equipment;
 import com.gergelytamas.brdwksttest.domain.enumeration.CarStatus;
 import com.gergelytamas.brdwksttest.domain.enumeration.FuelType;
 import com.gergelytamas.brdwksttest.repository.CarRepository;
 import com.gergelytamas.brdwksttest.service.CarService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,8 +35,9 @@ class CarServiceTest {
     }
 
     @Test
-    @DisplayName("Should get all cars.")
-    void getAllCarsTest() {
+    @DisplayName("Should found all cars.")
+    void foundAllCarsTest() {
+
         final List<Car> cars = new ArrayList<>();
         final Car firstCar =
                 new Car(
@@ -67,14 +69,14 @@ class CarServiceTest {
 
         verify(carRepository, times(1)).findAll();
 
-        Assertions.assertEquals(2, carList.size());
-        Assertions.assertEquals(firstCar, carList.get(0));
-        Assertions.assertEquals(secondCar, carList.get(1));
+        assertEquals(2, carList.size());
+        assertEquals(firstCar, carList.get(0));
+        assertEquals(secondCar, carList.get(1));
     }
 
     @Test
-    @DisplayName("Should get car by ID.")
-    void getCarByIdTest() throws InvalidKeyException {
+    @DisplayName("Should found car by ID.")
+    void foundCarByIdTest() throws InvalidKeyException {
         when(carRepository.findById(1L))
                 .thenReturn(
                         Optional.of(
@@ -92,18 +94,32 @@ class CarServiceTest {
 
         verify(carRepository, times(1)).findById(1L);
 
-        Assertions.assertEquals("ABC123", car.getLicensePlate());
-        Assertions.assertEquals("Ford", car.getMake());
-        Assertions.assertEquals("S-Max", car.getModel());
-        Assertions.assertEquals(FuelType.DIESEL, car.getFuelType());
-        Assertions.assertEquals(CarStatus.AVAILABLE, car.getCarStatus());
+        assertEquals("ABC123", car.getLicensePlate());
+        assertEquals("Ford", car.getMake());
+        assertEquals("S-Max", car.getModel());
+        assertEquals(FuelType.DIESEL, car.getFuelType());
+        assertEquals(CarStatus.AVAILABLE, car.getCarStatus());
+    }
+
+    @Test
+    @DisplayName("Should not found a car by ID.")
+    void notFoundCarByID() {
+
+        when(carRepository.findById(1L)).thenReturn(Optional.empty());
+
+        final Optional<Car> foundCar = carService.findById(1L);
+
+        verify(carRepository, times(1)).findById(1L);
+
+        assertEquals(Optional.empty(), foundCar);
+
     }
 
     // TODO: findAllByEquipment
 
     @Test
-    @DisplayName("Should get all available cars.")
-    void getAllCarsByAvailability() {
+    @DisplayName("Should found all available cars.")
+    void foundAllCarsByAvailability() {
         final List<Car> cars = new ArrayList<>();
         final Car firstCar =
                 new Car(
@@ -135,13 +151,13 @@ class CarServiceTest {
 
         verify(carRepository, times(1)).findAllAvailable();
 
-        Assertions.assertEquals(1, carList.size());
-        Assertions.assertEquals(firstCar, carList.get(0));
+        assertEquals(1, carList.size());
+        assertEquals(firstCar, carList.get(0));
     }
 
     @Test
-    @DisplayName("Should get all cars by make.")
-    void getAllCarsByMake() {
+    @DisplayName("Should found all cars by make.")
+    void foundAllCarsByMake() {
         final List<Car> cars = new ArrayList<>();
         final Car firstCar =
                 new Car(
@@ -173,8 +189,8 @@ class CarServiceTest {
 
         verify(carRepository, times(1)).findAllByMake("Ford");
 
-        Assertions.assertEquals(1, carList.size());
-        Assertions.assertEquals(firstCar, carList.get(0));
+        assertEquals(1, carList.size());
+        assertEquals(firstCar, carList.get(0));
     }
 
     @Test
@@ -191,9 +207,13 @@ class CarServiceTest {
                         new HashSet<>(),
                         new HashSet<>());
 
-        carService.save(car);
+        when(carRepository.save(car)).thenReturn(car);
+
+        final Car foundCar = carService.save(car);
 
         verify(carRepository, times(1)).save(car);
+
+        assertEquals(car, foundCar);
     }
 
     @Test
@@ -210,17 +230,19 @@ class CarServiceTest {
                         new HashSet<>(),
                         new HashSet<>());
 
+        when(carRepository.save(car)).thenReturn(car);
+
         carService.save(car);
         car.setLicensePlate("DEF456");
         carService.update(car, 1L);
 
         verify(carRepository, times(2)).save(car);
 
-        Assertions.assertEquals("DEF456", car.getLicensePlate());
-        Assertions.assertEquals("Ford", car.getMake());
-        Assertions.assertEquals("S-Max", car.getModel());
-        Assertions.assertEquals(FuelType.DIESEL, car.getFuelType());
-        Assertions.assertEquals(CarStatus.AVAILABLE, car.getCarStatus());
+        assertEquals("DEF456", car.getLicensePlate());
+        assertEquals("Ford", car.getMake());
+        assertEquals("S-Max", car.getModel());
+        assertEquals(FuelType.DIESEL, car.getFuelType());
+        assertEquals(CarStatus.AVAILABLE, car.getCarStatus());
     }
 
     @Test
