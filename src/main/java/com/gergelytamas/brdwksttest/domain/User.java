@@ -6,8 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,21 +22,21 @@ import java.util.Set;
 @NoArgsConstructor
 public class User extends BaseEntity implements Serializable {
 
-    @NotNull
+    @NotBlank
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @NotNull
+    @NotBlank
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @NotNull
+    @Email
     @Column(name = "email", nullable = false)
     private String email;
 
     @NotNull
     @Column(name = "birth_date", nullable = false)
-    private Date birthDate;
+    private ZonedDateTime birthDate;
 
     @Column(name = "birth_place")
     private String birthPlace;
@@ -56,7 +59,7 @@ public class User extends BaseEntity implements Serializable {
             final String firstName,
             final String lastName,
             final String email,
-            final Date birthDate,
+            final ZonedDateTime birthDate,
             final String birthPlace,
             final String phoneNumber,
             final HashSet<Reservation> reservations,

@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,30 +31,30 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<UserDTO> save(@Valid @RequestBody final UserDTO userDTO) {
+    public ResponseEntity<UserDTO> save(@Valid @RequestBody final UserDTO userDTO)
+            throws URISyntaxException {
         log.debug("REST request to save User : {}", userDTO);
 
-        if (userDTO.getId() == null) {
+        if (userDTO.getId() != null) {
             return ResponseEntity.badRequest().build();
-        } else {
-            return ResponseEntity.ok()
-                    .body(userMapper.toDto(this.userService.save(userMapper.toEntity(userDTO))));
         }
+
+        final UserDTO result =
+                userMapper.toDto(this.userService.save(userMapper.toEntity(userDTO)));
+        return ResponseEntity.created(new URI("/api/users/" + result.getId())).body(result);
     }
 
-    @PutMapping("")
-    public ResponseEntity<UserDTO> update(@Valid @RequestBody final UserDTO userDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDTO> update(
+            @Valid @RequestBody final UserDTO userDTO, @PathVariable final Long id) {
         log.debug("REST request to update User : {}", userDTO);
 
         if (userDTO.getId() == null) {
             return ResponseEntity.badRequest().build();
-        } else {
-            return ResponseEntity.ok()
-                    .body(
-                            userMapper.toDto(
-                                    this.userService.update(
-                                            userMapper.toEntity(userDTO), userDTO.getId())));
         }
+
+        return ResponseEntity.ok()
+                .body(userMapper.toDto(this.userService.update(userMapper.toEntity(userDTO), id)));
     }
 
     @GetMapping("")
@@ -88,8 +90,8 @@ public class UserController {
     public ResponseEntity<String> delete(@PathVariable final Long id) {
         log.debug("REST request to delete User : {}", id);
         this.userService.delete(id);
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .header("X-WkstTestApp-alert", "User with id " + id + " has been deleted.")
-                .body(null);
+                .build();
     }
 }

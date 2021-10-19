@@ -1,11 +1,11 @@
 package com.gergelytamas.brdwksttest.domain;
 
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Equipment extends BaseEntity implements Serializable {
 
-    @NotNull
+    @NotBlank
     @Column(name = "description")
     private String description;
 

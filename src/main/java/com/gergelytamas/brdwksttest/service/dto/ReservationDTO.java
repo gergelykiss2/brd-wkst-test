@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -15,9 +15,9 @@ public class ReservationDTO implements Serializable {
 
     private Long id;
 
-    @NotNull private Instant dateFrom;
+    @NotNull private ZonedDateTime dateFrom;
 
-    @NotNull private Instant dateTo;
+    @NotNull private ZonedDateTime dateTo;
 
     @NotNull private ReservationStatus reservationStatus;
 

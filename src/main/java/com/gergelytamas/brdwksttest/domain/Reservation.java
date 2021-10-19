@@ -10,7 +10,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 @Entity
 @Getter
@@ -25,11 +25,11 @@ public class Reservation extends BaseEntity implements Serializable {
 
     @NotNull
     @Column(name = "date_from", nullable = false)
-    private Date dateFrom;
+    private ZonedDateTime dateFrom;
 
     @NotNull
     @Column(name = "date_to", nullable = false)
-    private Date dateTo;
+    private ZonedDateTime dateTo;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -51,8 +51,8 @@ public class Reservation extends BaseEntity implements Serializable {
 
     public Reservation(
             final Long id,
-            final Date dateFrom,
-            final Date dateTo,
+            final ZonedDateTime dateFrom,
+            final ZonedDateTime dateTo,
             final ReservationStatus reservationStatus,
             final ReservationType reservationType,
             final User user,

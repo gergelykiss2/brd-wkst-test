@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,35 +33,33 @@ public class ReservationController {
 
     @PostMapping("")
     public ResponseEntity<ReservationDTO> save(
-            @Valid @RequestBody final ReservationDTO reservationDTO) {
+            @Valid @RequestBody final ReservationDTO reservationDTO) throws URISyntaxException {
         log.debug("REST request to save Reservation : {}", reservationDTO);
 
-        if (reservationDTO.getId() == null) {
+        if (reservationDTO.getId() != null) {
             return ResponseEntity.badRequest().build();
-        } else {
-            return ResponseEntity.ok()
-                    .body(
-                            reservationMapper.toDto(
-                                    this.reservationService.save(
-                                            reservationMapper.toEntity(reservationDTO))));
         }
+
+        final ReservationDTO result =
+                reservationMapper.toDto(
+                        this.reservationService.save(reservationMapper.toEntity(reservationDTO)));
+        return ResponseEntity.created(new URI("/api/reservations/" + result.getId())).body(result);
     }
 
-    @PutMapping("")
+    @PutMapping("/{id}")
     public ResponseEntity<ReservationDTO> update(
-            @Valid @RequestBody final ReservationDTO reservationDTO) {
+            @Valid @RequestBody final ReservationDTO reservationDTO, @PathVariable final Long id) {
         log.debug("REST request to update Reservation : {}", reservationDTO);
 
         if (reservationDTO.getId() == null) {
             return ResponseEntity.badRequest().build();
-        } else {
-            return ResponseEntity.ok()
-                    .body(
-                            reservationMapper.toDto(
-                                    this.reservationService.update(
-                                            reservationMapper.toEntity(reservationDTO),
-                                            reservationDTO.getId())));
         }
+
+        return ResponseEntity.ok()
+                .body(
+                        reservationMapper.toDto(
+                                this.reservationService.update(
+                                        reservationMapper.toEntity(reservationDTO), id)));
     }
 
     @GetMapping("")
@@ -110,8 +110,8 @@ public class ReservationController {
     public ResponseEntity<String> delete(@PathVariable final Long id) {
         log.debug("REST request to delete Reservation : {}", id);
         this.reservationService.delete(id);
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .header("X-WkstTestApp-alert", "Reservation with id " + id + " has been deleted.")
-                .body(null);
+                .build();
     }
 }

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,8 +42,8 @@ class ReservationServiceTest {
         final Reservation firstReservation =
                 new Reservation(
                         1L,
-                        new Date(System.currentTimeMillis()),
-                        new Date(System.currentTimeMillis() + 86400000),
+                        ZonedDateTime.now(),
+                        ZonedDateTime.now().plusDays(1),
                         ReservationStatus.BOOKED,
                         ReservationType.WORK,
                         null,
@@ -50,8 +51,8 @@ class ReservationServiceTest {
         final Reservation secondReservation =
                 new Reservation(
                         2L,
-                        new Date(System.currentTimeMillis()),
-                        new Date(System.currentTimeMillis() + 86400000),
+                        ZonedDateTime.now(),
+                        ZonedDateTime.now().plusDays(1),
                         ReservationStatus.IN_PROGRESS,
                         ReservationType.PERSONAL,
                         null,
@@ -78,8 +79,8 @@ class ReservationServiceTest {
         final Reservation reservation =
                 new Reservation(
                         1L,
-                        new Date(System.currentTimeMillis()),
-                        new Date(System.currentTimeMillis() + 86400000),
+                        ZonedDateTime.now(),
+                        ZonedDateTime.now().plusDays(1),
                         ReservationStatus.BOOKED,
                         ReservationType.WORK,
                         null,
@@ -115,8 +116,8 @@ class ReservationServiceTest {
         final Reservation reservation =
                 new Reservation(
                         1L,
-                        new Date(System.currentTimeMillis()),
-                        new Date(System.currentTimeMillis() + 86400000),
+                        ZonedDateTime.now(),
+                        ZonedDateTime.now().plusDays(1),
                         ReservationStatus.BOOKED,
                         ReservationType.WORK,
                         null,
@@ -138,8 +139,8 @@ class ReservationServiceTest {
         final Reservation reservation =
                 new Reservation(
                         1L,
-                        new Date(System.currentTimeMillis()),
-                        new Date(System.currentTimeMillis() + 86400000),
+                        ZonedDateTime.now(),
+                        ZonedDateTime.now().plusDays(1),
                         ReservationStatus.BOOKED,
                         ReservationType.WORK,
                         null,
@@ -163,8 +164,8 @@ class ReservationServiceTest {
         final Reservation reservation =
                 new Reservation(
                         1L,
-                        new Date(System.currentTimeMillis()),
-                        new Date(System.currentTimeMillis() + 86400000),
+                        ZonedDateTime.now(),
+                        ZonedDateTime.now().plusDays(1),
                         ReservationStatus.BOOKED,
                         ReservationType.WORK,
                         null,

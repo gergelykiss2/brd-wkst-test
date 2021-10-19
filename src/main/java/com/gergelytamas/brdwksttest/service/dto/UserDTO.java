@@ -5,8 +5,11 @@ import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,13 +19,15 @@ public class UserDTO implements Serializable {
 
     private Long id;
 
-    @NotNull private String firstName;
+    @NotBlank
+    private String firstName;
 
-    @NotNull private String lastName;
+    @NotBlank private String lastName;
 
-    @NotNull private String email;
+    @Email
+    private String email;
 
-    @NotNull private Instant birthDate;
+    @NotNull private ZonedDateTime birthDate;
 
     private String birthPlace;
 

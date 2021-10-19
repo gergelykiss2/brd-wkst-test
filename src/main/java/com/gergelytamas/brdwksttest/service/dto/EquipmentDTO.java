@@ -2,10 +2,10 @@ package com.gergelytamas.brdwksttest.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gergelytamas.brdwksttest.domain.Car;
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +16,8 @@ public class EquipmentDTO implements Serializable {
 
     private Long id;
 
-    @NotNull private String description;
+    @NotBlank
+    private String description;
 
     @JsonIgnore private Set<Car> cars = new HashSet<>();
 }

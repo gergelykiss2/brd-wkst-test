@@ -2,12 +2,13 @@ package com.gergelytamas.brdwksttest.domain;
 
 import com.gergelytamas.brdwksttest.domain.enumeration.CarStatus;
 import com.gergelytamas.brdwksttest.domain.enumeration.FuelType;
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,15 +21,15 @@ import java.util.Set;
 @NoArgsConstructor
 public class Car extends BaseEntity implements Serializable {
 
-    @NotNull
+    @NotBlank
     @Column(name = "license_plate", nullable = false)
     private String licensePlate;
 
-    @NotNull
+    @NotBlank
     @Column(name = "make", nullable = false)
     private String make;
 
-    @NotNull
+    @NotBlank
     @Column(name = "model", nullable = false)
     private String model;
 

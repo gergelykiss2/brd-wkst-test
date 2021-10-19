@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +41,7 @@ class UserServiceTest {
                         "Test",
                         "User 1",
                         "test.user1@example.com",
-                        new Date(System.currentTimeMillis()),
+                        ZonedDateTime.now(),
                         null,
                         null,
                         new HashSet<>(),
@@ -50,7 +52,7 @@ class UserServiceTest {
                         "Test",
                         "User 2",
                         "test.user2@example.com",
-                        new Date(System.currentTimeMillis()),
+                        ZonedDateTime.now(),
                         null,
                         null,
                         new HashSet<>(),
@@ -80,7 +82,7 @@ class UserServiceTest {
                         "Test",
                         "User 1",
                         "test.user1@example.com",
-                        new Date(System.currentTimeMillis()),
+                        ZonedDateTime.now(),
                         null,
                         null,
                         new HashSet<>(),
@@ -118,7 +120,7 @@ class UserServiceTest {
                         "Test",
                         "User 1",
                         "test.user1@example.com",
-                        new Date(System.currentTimeMillis()),
+                        ZonedDateTime.now(),
                         null,
                         null,
                         new HashSet<>(),
@@ -143,7 +145,7 @@ class UserServiceTest {
                         "Test",
                         "User 1",
                         "test.user1@example.com",
-                        new Date(System.currentTimeMillis()),
+                        ZonedDateTime.now(),
                         null,
                         null,
                         new HashSet<>(),
@@ -170,7 +172,7 @@ class UserServiceTest {
                         "Test",
                         "User 1",
                         "test.user1@example.com",
-                        new Date(System.currentTimeMillis()),
+                        ZonedDateTime.now(),
                         null,
                         null,
                         new HashSet<>(),

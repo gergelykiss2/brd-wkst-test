@@ -6,13 +6,17 @@ import com.gergelytamas.brdwksttest.service.mapper.EquipmentMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Validated
 @RequestMapping("/api/equipments")
 public class EquipmentController {
 
@@ -29,35 +33,33 @@ public class EquipmentController {
     }
 
     @PostMapping("")
-    public ResponseEntity<EquipmentDTO> save(@Valid @RequestBody final EquipmentDTO equipmentDTO) {
+    public ResponseEntity<EquipmentDTO> save(@Valid @RequestBody final EquipmentDTO equipmentDTO)
+            throws URISyntaxException {
         log.debug("REST request to save Equipment : {}", equipmentDTO);
 
-        if (equipmentDTO.getId() == null) {
+        if (equipmentDTO.getId() != null) {
             return ResponseEntity.badRequest().build();
-        } else {
-            return ResponseEntity.ok()
-                    .body(
-                            equipmentMapper.toDto(
-                                    this.equipmentService.save(
-                                            equipmentMapper.toEntity(equipmentDTO))));
         }
+        final EquipmentDTO result =
+                equipmentMapper.toDto(
+                        this.equipmentService.save(equipmentMapper.toEntity(equipmentDTO)));
+        return ResponseEntity.created(new URI("/api/equipments/" + result.getId())).body(result);
     }
 
-    @PutMapping("")
+    @PutMapping("/{id}")
     public ResponseEntity<EquipmentDTO> update(
-            @Valid @RequestBody final EquipmentDTO equipmentDTO) {
+            @Valid @RequestBody final EquipmentDTO equipmentDTO, @PathVariable final Long id) {
         log.debug("REST request to update Equipment : {}", equipmentDTO);
 
         if (equipmentDTO.getId() == null) {
             return ResponseEntity.badRequest().build();
-        } else {
-            return ResponseEntity.ok()
-                    .body(
-                            equipmentMapper.toDto(
-                                    this.equipmentService.update(
-                                            equipmentMapper.toEntity(equipmentDTO),
-                                            equipmentDTO.getId())));
         }
+
+        return ResponseEntity.ok()
+                .body(
+                        equipmentMapper.toDto(
+                                this.equipmentService.update(
+                                        equipmentMapper.toEntity(equipmentDTO), id)));
     }
 
     @GetMapping("")
@@ -80,8 +82,8 @@ public class EquipmentController {
     public ResponseEntity<String> delete(@PathVariable final Long id) {
         log.debug("REST request to delete Equipment : {}", id);
         this.equipmentService.delete(id);
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .header("X-WkstTestApp-alert", "Equipment with id " + id + " has been deleted.")
-                .body(null);
+                .build();
     }
 }
