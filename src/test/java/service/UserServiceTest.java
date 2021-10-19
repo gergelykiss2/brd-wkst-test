@@ -56,7 +56,7 @@ class UserServiceTest {
                         new HashSet<>(),
                         true);
 
-//        users.add(firstUser);
+        users.add(firstUser);
         users.add(secondUser);
 
         when(userRepository.findAll()).thenReturn(users);
