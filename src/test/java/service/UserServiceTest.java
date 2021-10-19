@@ -13,8 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -56,7 +56,7 @@ class UserServiceTest {
                         new HashSet<>(),
                         true);
 
-        users.add(firstUser);
+//        users.add(firstUser);
         users.add(secondUser);
 
         when(userRepository.findAll()).thenReturn(users);
@@ -93,7 +93,6 @@ class UserServiceTest {
         verify(userRepository, times(1)).findById(1L);
 
         assertEquals(user, foundUser);
-
     }
 
     @Test

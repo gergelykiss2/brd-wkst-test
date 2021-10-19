@@ -3,9 +3,9 @@ package service;
 import com.gergelytamas.brdwksttest.domain.Reservation;
 import com.gergelytamas.brdwksttest.domain.enumeration.ReservationStatus;
 import com.gergelytamas.brdwksttest.domain.enumeration.ReservationType;
+import com.gergelytamas.brdwksttest.exception.NotFoundException;
 import com.gergelytamas.brdwksttest.repository.ReservationRepository;
 import com.gergelytamas.brdwksttest.service.ReservationService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,8 +34,9 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("Should get all reservations.")
-    void getAllReservationsTest() {
+    @DisplayName("Should found all reservations.")
+    void foundAllReservationsTest() {
+
         final List<Reservation> reservations = new ArrayList<>();
         final Reservation firstReservation =
                 new Reservation(
@@ -64,34 +66,113 @@ class ReservationServiceTest {
 
         verify(reservationRepository, times(1)).findAll();
 
-        Assertions.assertEquals(2, reservationList.size());
-        Assertions.assertEquals(firstReservation, reservationList.get(0));
-        Assertions.assertEquals(secondReservation, reservationList.get(1));
+        assertEquals(2, reservationList.size());
+        assertEquals(firstReservation, reservationList.get(0));
+        assertEquals(secondReservation, reservationList.get(1));
     }
 
     @Test
-    @DisplayName("Should get reservation by ID.")
-    void getCarByIdTest() {
-        when(reservationRepository.findById(1L))
-                .thenReturn(
-                        Optional.of(
-                                new Reservation(
-                                        1L,
-                                        new Date(System.currentTimeMillis()),
-                                        new Date(System.currentTimeMillis() + 86400000),
-                                        ReservationStatus.BOOKED,
-                                        ReservationType.WORK,
-                                        null,
-                                        null)));
+    @DisplayName("Should found reservation by ID.")
+    void foundReservationByIdTest() {
 
-        final Reservation reservation = reservationService.findById(1L).get();
+        final Reservation reservation =
+                new Reservation(
+                        1L,
+                        new Date(System.currentTimeMillis()),
+                        new Date(System.currentTimeMillis() + 86400000),
+                        ReservationStatus.BOOKED,
+                        ReservationType.WORK,
+                        null,
+                        null);
+
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+
+        final Reservation foundReservation =
+                reservationService.findById(1L).orElseThrow(NotFoundException::new);
 
         verify(reservationRepository, times(1)).findById(1L);
 
-        //        Assertions.assertEquals("ABC123", reservation.getLicensePlate());
-        //        Assertions.assertEquals("Ford", reservation.getMake());
-        //        Assertions.assertEquals("S-Max", reservation.getModel());
-        //        Assertions.assertEquals(FuelType.DIESEL, reservation.getFuelType());
-        //        Assertions.assertEquals(CarStatus.AVAILABLE, reservation.getCarStatus());
+        assertEquals(reservation, foundReservation);
+    }
+
+    @Test
+    @DisplayName("Should not found reservation by ID.")
+    void notFoundReservationByIdTest() {
+
+        when(reservationRepository.findById(1L)).thenReturn(Optional.empty());
+
+        final Optional<Reservation> foundReservation = reservationService.findById(1L);
+
+        verify(reservationRepository, times(1)).findById(1L);
+
+        assertEquals(Optional.empty(), foundReservation);
+    }
+
+    @Test
+    @DisplayName("Should save a reservation entity")
+    void createReservationTest() {
+
+        final Reservation reservation =
+                new Reservation(
+                        1L,
+                        new Date(System.currentTimeMillis()),
+                        new Date(System.currentTimeMillis() + 86400000),
+                        ReservationStatus.BOOKED,
+                        ReservationType.WORK,
+                        null,
+                        null);
+
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
+
+        final Reservation savedReservation = reservationService.save(reservation);
+
+        verify(reservationRepository, times(1)).save(reservation);
+
+        assertEquals(reservation, savedReservation);
+    }
+
+    @Test
+    @DisplayName("Should update a reservation entity")
+    void updateReservationTest() {
+
+        final Reservation reservation =
+                new Reservation(
+                        1L,
+                        new Date(System.currentTimeMillis()),
+                        new Date(System.currentTimeMillis() + 86400000),
+                        ReservationStatus.BOOKED,
+                        ReservationType.WORK,
+                        null,
+                        null);
+
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
+
+        reservationService.save(reservation);
+        reservation.setReservationStatus(ReservationStatus.IN_PROGRESS);
+        reservationService.save(reservation);
+
+        verify(reservationRepository, times(2)).save(reservation);
+
+        assertEquals(reservation.getReservationStatus(), ReservationStatus.IN_PROGRESS);
+    }
+
+    @Test
+    @DisplayName("Should delete a reservation entity.")
+    void deleteReservationTest() {
+
+        final Reservation reservation =
+                new Reservation(
+                        1L,
+                        new Date(System.currentTimeMillis()),
+                        new Date(System.currentTimeMillis() + 86400000),
+                        ReservationStatus.BOOKED,
+                        ReservationType.WORK,
+                        null,
+                        null);
+
+        reservationService.save(reservation);
+        reservationService.delete(reservation.getId());
+
+        verify(reservationRepository, times(1)).deleteById(reservation.getId());
     }
 }

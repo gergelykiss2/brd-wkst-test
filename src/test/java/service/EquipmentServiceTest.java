@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EquipmentServiceTest {
@@ -56,7 +56,7 @@ public class EquipmentServiceTest {
 
     @Test
     @DisplayName("Should found an equipment by ID.")
-    void foundEquipmentByIdTest() throws NotFoundException {
+    void foundEquipmentByIdTest() {
 
         final Equipment equipment = new Equipment(1L, "Climate control", new HashSet<>());
 
@@ -72,7 +72,7 @@ public class EquipmentServiceTest {
 
     @Test
     @DisplayName("Should not found an equipment by ID.")
-    void notFoundEquipmentByIdTest() throws NotFoundException {
+    void notFoundEquipmentByIdTest() {
 
         when(equipmentRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -118,6 +118,7 @@ public class EquipmentServiceTest {
     @Test
     @DisplayName("Should delete an equipment entity.")
     void deleteEquipmentTest() {
+
         final Equipment equipment = new Equipment(1L, "Navigation", new HashSet<>());
 
         equipmentService.save(equipment);

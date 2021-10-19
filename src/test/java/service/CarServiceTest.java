@@ -1,9 +1,9 @@
 package service;
 
 import com.gergelytamas.brdwksttest.domain.Car;
-import com.gergelytamas.brdwksttest.domain.Equipment;
 import com.gergelytamas.brdwksttest.domain.enumeration.CarStatus;
 import com.gergelytamas.brdwksttest.domain.enumeration.FuelType;
+import com.gergelytamas.brdwksttest.exception.NotFoundException;
 import com.gergelytamas.brdwksttest.repository.CarRepository;
 import com.gergelytamas.brdwksttest.service.CarService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -76,7 +75,8 @@ class CarServiceTest {
 
     @Test
     @DisplayName("Should found car by ID.")
-    void foundCarByIdTest() throws InvalidKeyException {
+    void foundCarByIdTest() throws NotFoundException {
+
         when(carRepository.findById(1L))
                 .thenReturn(
                         Optional.of(
@@ -90,7 +90,7 @@ class CarServiceTest {
                                         new HashSet<>(),
                                         new HashSet<>())));
 
-        final Car car = carService.findById(1L).orElseThrow(InvalidKeyException::new);
+        final Car car = carService.findById(1L).orElseThrow(NotFoundException::new);
 
         verify(carRepository, times(1)).findById(1L);
 
@@ -112,7 +112,6 @@ class CarServiceTest {
         verify(carRepository, times(1)).findById(1L);
 
         assertEquals(Optional.empty(), foundCar);
-
     }
 
     // TODO: findAllByEquipment
@@ -120,6 +119,7 @@ class CarServiceTest {
     @Test
     @DisplayName("Should found all available cars.")
     void foundAllCarsByAvailability() {
+
         final List<Car> cars = new ArrayList<>();
         final Car firstCar =
                 new Car(
@@ -158,6 +158,7 @@ class CarServiceTest {
     @Test
     @DisplayName("Should found all cars by make.")
     void foundAllCarsByMake() {
+
         final List<Car> cars = new ArrayList<>();
         final Car firstCar =
                 new Car(
@@ -196,6 +197,7 @@ class CarServiceTest {
     @Test
     @DisplayName("Should save a car entity.")
     void createCarTest() {
+
         final Car car =
                 new Car(
                         1L,
@@ -219,6 +221,7 @@ class CarServiceTest {
     @Test
     @DisplayName("Should update a car entity.")
     void updateCarTest() {
+
         final Car car =
                 new Car(
                         1L,
@@ -248,6 +251,7 @@ class CarServiceTest {
     @Test
     @DisplayName("Should delete a car entity.")
     void deleteCarTest() {
+
         final Car car =
                 new Car(
                         1L,
