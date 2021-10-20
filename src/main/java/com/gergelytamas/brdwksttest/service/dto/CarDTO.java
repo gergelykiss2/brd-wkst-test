@@ -14,12 +14,9 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class CarDTO implements Serializable {
+public class CarDTO extends BaseDTO implements Serializable {
 
-    private Long id;
-
-    @NotBlank
-    private String licensePlate;
+    @NotBlank private String licensePlate;
 
     @NotBlank private String make;
 
@@ -27,8 +24,7 @@ public class CarDTO implements Serializable {
 
     @NotNull private FuelType fuelType;
 
-    @NotNull
-    private CarStatus carStatus;
+    @NotNull private CarStatus carStatus;
 
     private Set<Reservation> reservations = new HashSet<>();
 }

@@ -1,25 +1,28 @@
 package com.gergelytamas.brdwksttest.domain;
 
 import com.sun.istack.NotNull;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Getter
-@Setter
-@Table(name = "user")
-@SequenceGenerator(name = "user_id_seq_gen", sequenceName = "user_id_seq", allocationSize = 1)
+@Data
 @NoArgsConstructor
+@Table(name = "wkst_user", schema = "public")
+@SequenceGenerator(
+        name = "wkst_user_id_seq_gen",
+        sequenceName = "wkst_user_id_seq",
+        allocationSize = 1)
 public class User extends BaseEntity implements Serializable {
 
     @NotBlank
@@ -31,6 +34,7 @@ public class User extends BaseEntity implements Serializable {
     private String lastName;
 
     @Email
+    @NotBlank
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -54,17 +58,20 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
+    @Builder
     public User(
-            final Long id,
+            final Integer id,
             final String firstName,
             final String lastName,
             final String email,
             final ZonedDateTime birthDate,
             final String birthPlace,
             final String phoneNumber,
-            final HashSet<Reservation> reservations,
-            final Boolean active) {
-        super();
+            final Set<Reservation> reservations,
+            final Boolean active,
+            final ZonedDateTime createdOn,
+            final ZonedDateTime modifiedOn) {
+        super(id, createdOn, modifiedOn);
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

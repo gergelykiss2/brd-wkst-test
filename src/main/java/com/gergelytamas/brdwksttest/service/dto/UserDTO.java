@@ -1,31 +1,26 @@
 package com.gergelytamas.brdwksttest.service.dto;
 
 import com.gergelytamas.brdwksttest.domain.Reservation;
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
-public class UserDTO implements Serializable {
+public class UserDTO extends BaseDTO implements Serializable {
 
-    private Long id;
-
-    @NotBlank
-    private String firstName;
+    @NotBlank private String firstName;
 
     @NotBlank private String lastName;
 
-    @Email
-    private String email;
+    @Email @NotBlank private String email;
 
     @NotNull private ZonedDateTime birthDate;
 

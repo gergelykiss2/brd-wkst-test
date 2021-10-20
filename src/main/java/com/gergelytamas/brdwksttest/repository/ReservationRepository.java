@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
     @Query(
             "select reservation from Reservation reservation where reservation.reservationStatus =: reservation_status")
@@ -19,8 +19,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("reservation_status") final ReservationStatus reservationStatus);
 
     @Query("select reservation from Reservation reservation where reservation.user.id =: userId")
-    Optional<Reservation> findByUserId(@Param("userId") final Long personId);
+    Optional<Reservation> findByUserId(@Param("userId") final Integer personId);
 
     @Query("select reservation from Reservation reservation where reservation.car.id =: carId")
-    Optional<Reservation> findByCarId(@Param("carId") final Long carId);
+    Optional<Reservation> findByCarId(@Param("carId") final Integer carId);
 }

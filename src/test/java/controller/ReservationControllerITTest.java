@@ -43,20 +43,17 @@ class ReservationControllerITTest {
 
     private Reservation reservation;
 
-    public static Reservation createEntity(final EntityManager em) {
-        return new Reservation(
-                1L,
-                ZonedDateTime.now(),
-                ZonedDateTime.now().plusDays(1),
-                ReservationStatus.BOOKED,
-                ReservationType.WORK,
-                null,
-                null);
-    }
-
     @BeforeEach
     void initTest() {
-        reservation = createEntity(em);
+        this.reservation =
+                Reservation.builder()
+                        .dateFrom(ZonedDateTime.now())
+                        .dateTo(ZonedDateTime.now())
+                        .reservationStatus(ReservationStatus.BOOKED)
+                        .reservationType(ReservationType.WORK)
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
     }
 
     @Test
@@ -135,8 +132,10 @@ class ReservationControllerITTest {
         final Reservation testReservation = reservationList.get(0);
         assertThat(testReservation.getDateFrom()).isEqualTo(updatedDateFrom);
         assertThat(testReservation.getDateTo()).isEqualTo(updatedDateTo);
-        assertThat(testReservation.getReservationStatus()).isEqualTo(reservation.getReservationStatus());
-        assertThat(testReservation.getReservationType()).isEqualTo(reservation.getReservationType());
+        assertThat(testReservation.getReservationStatus())
+                .isEqualTo(reservation.getReservationStatus());
+        assertThat(testReservation.getReservationType())
+                .isEqualTo(reservation.getReservationType());
     }
 
     @Test
@@ -150,11 +149,19 @@ class ReservationControllerITTest {
                 .perform(get("/api/reservations"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.[*].id").value(hasItem(reservation.getId().intValue())))
-                .andExpect(jsonPath("$.[*].dateFrom").value(hasItem(sameInstant(reservation.getDateFrom()))))
-                .andExpect(jsonPath("$.[*].dateTo").value(hasItem(sameInstant(reservation.getDateTo()))))
-                .andExpect(jsonPath("$.[*].reservationStatus").value(hasItem(reservation.getReservationStatus().toString())))
-                .andExpect(jsonPath("$.[*].reservationType").value(hasItem(reservation.getReservationType().toString())));
+                .andExpect(jsonPath("$.[*].id").value(hasItem(reservation.getId())))
+                .andExpect(
+                        jsonPath("$.[*].dateFrom")
+                                .value(hasItem(sameInstant(reservation.getDateFrom()))))
+                .andExpect(
+                        jsonPath("$.[*].dateTo")
+                                .value(hasItem(sameInstant(reservation.getDateTo()))))
+                .andExpect(
+                        jsonPath("$.[*].reservationStatus")
+                                .value(hasItem(reservation.getReservationStatus().toString())))
+                .andExpect(
+                        jsonPath("$.[*].reservationType")
+                                .value(hasItem(reservation.getReservationType().toString())));
     }
 
     @Test
@@ -168,11 +175,15 @@ class ReservationControllerITTest {
                 .perform(get("/api/reservations/{id}", reservation.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").value(reservation.getId().intValue()))
+                .andExpect(jsonPath("$.id").value(reservation.getId()))
                 .andExpect(jsonPath("$.dateFrom").value(sameInstant(reservation.getDateFrom())))
                 .andExpect(jsonPath("$.dateTo").value(sameInstant(reservation.getDateTo())))
-                .andExpect(jsonPath("$.reservationStatus").value(reservation.getReservationStatus().toString()))
-                .andExpect(jsonPath("$.reservationType").value(reservation.getReservationType().toString()));
+                .andExpect(
+                        jsonPath("$.reservationStatus")
+                                .value(reservation.getReservationStatus().toString()))
+                .andExpect(
+                        jsonPath("$.reservationType")
+                                .value(reservation.getReservationType().toString()));
     }
 
     @Test

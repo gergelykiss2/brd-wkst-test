@@ -7,6 +7,7 @@ import com.gergelytamas.brdwksttest.service.mapper.ReservationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Validated
 @RequestMapping("/api/reservations")
 public class ReservationController {
 
@@ -48,7 +50,8 @@ public class ReservationController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ReservationDTO> update(
-            @Valid @RequestBody final ReservationDTO reservationDTO, @PathVariable final Long id) {
+            @Valid @RequestBody final ReservationDTO reservationDTO,
+            @PathVariable final Integer id) {
         log.debug("REST request to update Reservation : {}", reservationDTO);
 
         if (reservationDTO.getId() == null) {
@@ -73,7 +76,7 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationDTO> findById(@PathVariable final Long id) {
+    public ResponseEntity<ReservationDTO> findById(@PathVariable final Integer id) {
         log.debug("REST request to get Reservation : {}", id);
         return ResponseEntity.of(
                 this.reservationService.findById(id).map(reservationMapper::toDto));
@@ -93,21 +96,21 @@ public class ReservationController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<ReservationDTO> findByUser(@RequestParam final Long userId) {
+    public ResponseEntity<ReservationDTO> findByUser(@RequestParam final Integer userId) {
         log.debug("REST request to get Reservation by userId: {}", userId);
         return ResponseEntity.of(
                 this.reservationService.findByUser(userId).map(reservationMapper::toDto));
     }
 
     @GetMapping("/car")
-    public ResponseEntity<ReservationDTO> findByCar(@PathVariable final Long carId) {
+    public ResponseEntity<ReservationDTO> findByCar(@PathVariable final Integer carId) {
         log.debug("REST request to get Reservation by carId: {}", carId);
         return ResponseEntity.of(
                 this.reservationService.findByCar(carId).map(reservationMapper::toDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable final Long id) {
+    public ResponseEntity<String> delete(@PathVariable final Integer id) {
         log.debug("REST request to delete Reservation : {}", id);
         this.reservationService.delete(id);
         return ResponseEntity.noContent()

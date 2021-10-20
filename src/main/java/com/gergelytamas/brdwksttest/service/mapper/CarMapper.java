@@ -12,6 +12,7 @@ public interface CarMapper extends EntityMapper<CarDTO, Car> {
 
     CarDTO toDto(Car car);
 
+    @Mapping(target = "equipments", ignore = true)
     @Mapping(target = "createdOn", ignore = true)
     @Mapping(target = "modifiedOn", ignore = true)
     Car toEntity(CarDTO carDTO);

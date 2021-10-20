@@ -11,9 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -21,13 +22,44 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    UserService userService;
+    private UserService userService;
 
-    @Mock UserRepository userRepository;
+    @Mock private UserRepository userRepository;
+
+    private User firstUser;
+    private User secondUser;
 
     @BeforeEach
     void initTest() {
         this.userService = new UserService(userRepository);
+
+        this.firstUser =
+                User.builder()
+                        .id(1)
+                        .firstName("Test")
+                        .lastName("User 1")
+                        .email("test.user1@example.com")
+                        .birthDate(ZonedDateTime.now())
+                        .birthPlace("Birth City")
+                        .phoneNumber("123456789")
+                        .active(true)
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
+
+        this.secondUser =
+                User.builder()
+                        .id(2)
+                        .firstName("Test")
+                        .lastName("User 2")
+                        .email("test.user2@example.com")
+                        .birthDate(ZonedDateTime.now())
+                        .birthPlace("Birth City")
+                        .phoneNumber("123456789")
+                        .active(true)
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
     }
 
     @Test
@@ -35,29 +67,6 @@ class UserServiceTest {
     void foundAllUsersTest() {
 
         final List<User> users = new ArrayList<>();
-        final User firstUser =
-                new User(
-                        1L,
-                        "Test",
-                        "User 1",
-                        "test.user1@example.com",
-                        ZonedDateTime.now(),
-                        null,
-                        null,
-                        new HashSet<>(),
-                        true);
-        final User secondUser =
-                new User(
-                        2L,
-                        "Test",
-                        "User 2",
-                        "test.user2@example.com",
-                        ZonedDateTime.now(),
-                        null,
-                        null,
-                        new HashSet<>(),
-                        true);
-
         users.add(firstUser);
         users.add(secondUser);
 
@@ -76,36 +85,24 @@ class UserServiceTest {
     @DisplayName("Should found an user by ID.")
     void foundUserByIdTest() throws NotFoundException {
 
-        final User user =
-                new User(
-                        1L,
-                        "Test",
-                        "User 1",
-                        "test.user1@example.com",
-                        ZonedDateTime.now(),
-                        null,
-                        null,
-                        new HashSet<>(),
-                        true);
+        when(userRepository.findById(1)).thenReturn(Optional.of(firstUser));
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        final User foundUser = userService.findById(1).orElseThrow(NotFoundException::new);
 
-        final User foundUser = userService.findById(1L).orElseThrow(NotFoundException::new);
+        verify(userRepository, times(1)).findById(1);
 
-        verify(userRepository, times(1)).findById(1L);
-
-        assertEquals(user, foundUser);
+        assertEquals(firstUser, foundUser);
     }
 
     @Test
     @DisplayName("Should not found an user by ID.")
     void notFoundUserByIdTest() {
 
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(1)).thenReturn(Optional.empty());
 
-        final Optional<User> foundUser = userService.findById(1L);
+        final Optional<User> foundUser = userService.findById(1);
 
-        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).findById(1);
 
         assertEquals(Optional.empty(), foundUser);
     }
@@ -114,73 +111,37 @@ class UserServiceTest {
     @DisplayName("Should save an user entity.")
     void createUserTest() {
 
-        final User user =
-                new User(
-                        1L,
-                        "Test",
-                        "User 1",
-                        "test.user1@example.com",
-                        ZonedDateTime.now(),
-                        null,
-                        null,
-                        new HashSet<>(),
-                        true);
+        when(userRepository.save(firstUser)).thenReturn(firstUser);
 
-        when(userRepository.save(user)).thenReturn(user);
+        final User savedUser = userService.save(firstUser);
 
-        final User savedUser = userService.save(user);
+        verify(userRepository, times(1)).save(firstUser);
 
-        verify(userRepository, times(1)).save(user);
-
-        assertEquals(user, savedUser);
+        assertEquals(firstUser, savedUser);
     }
 
     @Test
     @DisplayName("Should update an user entity.")
     void updateUserTest() {
 
-        final User user =
-                new User(
-                        1L,
-                        "Test",
-                        "User 1",
-                        "test.user1@example.com",
-                        ZonedDateTime.now(),
-                        null,
-                        null,
-                        new HashSet<>(),
-                        true);
+        when(userRepository.save(firstUser)).thenReturn(firstUser);
 
-        when(userRepository.save(user)).thenReturn(user);
+        userService.save(firstUser);
+        firstUser.setLastName("User 2");
+        userService.update(firstUser, 1);
 
-        userService.save(user);
-        user.setLastName("User 2");
-        userService.update(user, 1L);
+        verify(userRepository, times(2)).save(firstUser);
 
-        verify(userRepository, times(2)).save(user);
-
-        assertEquals("User 2", user.getLastName());
+        assertEquals("User 2", firstUser.getLastName());
     }
 
     @Test
     @DisplayName("Should delete an user entity.")
     void deleteUserTest() {
 
-        final User user =
-                new User(
-                        1L,
-                        "Test",
-                        "User 1",
-                        "test.user1@example.com",
-                        ZonedDateTime.now(),
-                        null,
-                        null,
-                        new HashSet<>(),
-                        true);
+        userService.save(firstUser);
+        userService.delete(firstUser.getId());
 
-        userService.save(user);
-        userService.delete(user.getId());
-
-        verify(userRepository, times(1)).deleteById(user.getId());
+        verify(userRepository, times(1)).deleteById(firstUser.getId());
     }
 }

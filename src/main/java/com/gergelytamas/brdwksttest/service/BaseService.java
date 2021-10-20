@@ -8,11 +8,11 @@ public interface BaseService<T> {
 
     List<T> findAll();
 
-    Optional<T> findById(Long id);
+    Optional<T> findById(Integer id);
 
     T save(T t);
 
-    T update(T t, Long id);
+    T update(T t, Integer id);
 
-    void delete(Long id);
+    void delete(Integer id);
 }

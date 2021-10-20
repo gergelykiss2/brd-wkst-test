@@ -45,7 +45,7 @@ public class CarController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CarDTO> update(
-            @Valid @RequestBody final CarDTO carDTO, @PathVariable final Long id) {
+            @Valid @RequestBody final CarDTO carDTO, @PathVariable final Integer id) {
         log.debug("REST request to update Car : {}", carDTO);
 
         if (carDTO.getId() == null) {
@@ -66,7 +66,7 @@ public class CarController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CarDTO> findById(@PathVariable final Long id) {
+    public ResponseEntity<CarDTO> findById(@PathVariable final Integer id) {
         log.debug("REST request to get Car : {}", id);
         return ResponseEntity.of(this.carService.findById(id).map(carMapper::toDto));
     }
@@ -102,7 +102,7 @@ public class CarController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable final Long id) {
+    public ResponseEntity<String> delete(@PathVariable final Integer id) {
         log.debug("REST request to delete Car : {}", id);
         this.carService.delete(id);
         return ResponseEntity.noContent()

@@ -1,24 +1,26 @@
 package com.gergelytamas.brdwksttest.domain;
 
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Getter
-@Setter
-@Table(name = "equipment")
+@Data
+@NoArgsConstructor
+@Table(name = "equipment", schema = "public")
 @SequenceGenerator(
         name = "equipment_id_seq_gen",
         sequenceName = "equipment_id_seq",
         allocationSize = 1)
-@NoArgsConstructor
 public class Equipment extends BaseEntity implements Serializable {
 
     @NotBlank
@@ -28,8 +30,14 @@ public class Equipment extends BaseEntity implements Serializable {
     @ManyToMany(mappedBy = "equipments")
     private Set<Car> cars = new HashSet<>();
 
-    public Equipment(final Long id, final String description, final Set<Car> cars) {
-        super();
+    @Builder
+    public Equipment(
+            final Integer id,
+            final String description,
+            final Set<Car> cars,
+            final ZonedDateTime createdOn,
+            final ZonedDateTime modifiedOn) {
+        super(id, createdOn, modifiedOn);
         this.description = description;
         this.cars = cars;
     }

@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import java.util.HashSet;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,13 +40,14 @@ class EquipmentControllerITTest {
 
     private Equipment equipment;
 
-    public static Equipment createEntity(final EntityManager em) {
-        return new Equipment(1L, "Climate control", new HashSet<>());
-    }
-
     @BeforeEach
     void initTest() {
-        equipment = createEntity(em);
+        this.equipment =
+                Equipment.builder()
+                        .description("Climate control")
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
     }
 
     @Test

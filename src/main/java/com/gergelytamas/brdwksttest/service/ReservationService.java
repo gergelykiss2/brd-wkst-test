@@ -19,11 +19,11 @@ public class ReservationService extends BaseServiceImpl<Reservation, Reservation
         return this.repository.findAllByReservationStatus(reservationStatus);
     }
 
-    public Optional<Reservation> findByUser(final Long user) {
+    public Optional<Reservation> findByUser(final Integer user) {
         return this.repository.findByUserId(user);
     }
 
-    public Optional<Reservation> findByCar(final Long car) {
+    public Optional<Reservation> findByCar(final Integer car) {
         return this.repository.findByCarId(car);
     }
 }

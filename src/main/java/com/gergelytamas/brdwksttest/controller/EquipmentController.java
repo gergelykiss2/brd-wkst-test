@@ -48,7 +48,7 @@ public class EquipmentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EquipmentDTO> update(
-            @Valid @RequestBody final EquipmentDTO equipmentDTO, @PathVariable final Long id) {
+            @Valid @RequestBody final EquipmentDTO equipmentDTO, @PathVariable final Integer id) {
         log.debug("REST request to update Equipment : {}", equipmentDTO);
 
         if (equipmentDTO.getId() == null) {
@@ -73,13 +73,13 @@ public class EquipmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EquipmentDTO> findById(@PathVariable final Long id) {
+    public ResponseEntity<EquipmentDTO> findById(@PathVariable final Integer id) {
         log.debug("REST request to get Equipment : {}", id);
         return ResponseEntity.of(this.equipmentService.findById(id).map(equipmentMapper::toDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable final Long id) {
+    public ResponseEntity<String> delete(@PathVariable final Integer id) {
         log.debug("REST request to delete Equipment : {}", id);
         this.equipmentService.delete(id);
         return ResponseEntity.noContent()

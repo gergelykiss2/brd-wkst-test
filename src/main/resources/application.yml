@@ -1,9 +1,18 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:test
-  h2:
-    console:
-      enabled: true
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/brdwksttest?stringtype=unspecified
+    port: 5432
+    username: postgres
+    password:
+
   jpa:
     hibernate:
       ddl-auto: validate
+    database: POSTGRESQL
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    open-in-view: false
+
+  flyway:
+    enabled: true

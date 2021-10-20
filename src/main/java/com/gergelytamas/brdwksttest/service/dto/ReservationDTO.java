@@ -2,18 +2,16 @@ package com.gergelytamas.brdwksttest.service.dto;
 
 import com.gergelytamas.brdwksttest.domain.enumeration.ReservationStatus;
 import com.gergelytamas.brdwksttest.domain.enumeration.ReservationType;
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Getter
 @Setter
-public class ReservationDTO implements Serializable {
-
-    private Long id;
+public class ReservationDTO extends BaseDTO implements Serializable {
 
     @NotNull private ZonedDateTime dateFrom;
 
@@ -23,7 +21,7 @@ public class ReservationDTO implements Serializable {
 
     @NotNull private ReservationType reservationType;
 
-    private Long userId;
+    private Integer userId;
 
-    private Long carId;
+    private Integer carId;
 }

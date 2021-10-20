@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CarRepository extends JpaRepository<Car, Long> {
+public interface CarRepository extends JpaRepository<Car, Integer> {
 
     //    @Query("select car from Car car left join fetch car.equipments where
     // car.equipments.description IN :equipment")

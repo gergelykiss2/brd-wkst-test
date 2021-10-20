@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("select user from User user where user.email =: email")
     Optional<User> findByEmail(@Param("email") final String email);

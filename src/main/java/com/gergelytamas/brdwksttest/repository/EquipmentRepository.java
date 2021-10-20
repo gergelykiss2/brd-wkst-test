@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
+public interface EquipmentRepository extends JpaRepository<Equipment, Integer> {
 
     @Query("select equipment from Equipment equipment where equipment.description =: description")
     Optional<Equipment> findByDescription(@Param("description") final String description);

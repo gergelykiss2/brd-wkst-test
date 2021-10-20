@@ -11,8 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,15 +20,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EquipmentServiceTest {
+class EquipmentServiceTest {
 
-    EquipmentService equipmentService;
+    private EquipmentService equipmentService;
 
-    @Mock EquipmentRepository equipmentRepository;
+    @Mock private EquipmentRepository equipmentRepository;
+
+    private Equipment firstEquipment;
+    private Equipment secondEquipment;
 
     @BeforeEach
     void initTest() {
         this.equipmentService = new EquipmentService(equipmentRepository);
+
+        this.firstEquipment =
+                Equipment.builder()
+                        .id(1)
+                        .description("Climate control")
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
+
+        this.secondEquipment =
+                Equipment.builder()
+                        .id(2)
+                        .description("Automatic cruise control")
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
     }
 
     @Test
@@ -36,10 +55,6 @@ public class EquipmentServiceTest {
     void foundAllEquipmentsTest() {
 
         final List<Equipment> equipments = new ArrayList<>();
-        final Equipment firstEquipment = new Equipment(1L, "Rain sensor", new HashSet<>());
-        final Equipment secondEquipment =
-                new Equipment(2L, "Automatic cruise control", new HashSet<>());
-
         equipments.add(firstEquipment);
         equipments.add(secondEquipment);
 
@@ -58,27 +73,25 @@ public class EquipmentServiceTest {
     @DisplayName("Should found an equipment by ID.")
     void foundEquipmentByIdTest() {
 
-        final Equipment equipment = new Equipment(1L, "Climate control", new HashSet<>());
-
-        when(equipmentRepository.findById(1L)).thenReturn(Optional.of(equipment));
+        when(equipmentRepository.findById(1)).thenReturn(Optional.of(firstEquipment));
 
         final Equipment foundEquipment =
-                equipmentService.findById(1L).orElseThrow(NotFoundException::new);
+                equipmentService.findById(1).orElseThrow(NotFoundException::new);
 
-        verify(equipmentRepository, times(1)).findById(1L);
+        verify(equipmentRepository, times(1)).findById(1);
 
-        assertEquals(equipment, foundEquipment);
+        assertEquals(firstEquipment, foundEquipment);
     }
 
     @Test
     @DisplayName("Should not found an equipment by ID.")
     void notFoundEquipmentByIdTest() {
 
-        when(equipmentRepository.findById(1L)).thenReturn(Optional.empty());
+        when(equipmentRepository.findById(1)).thenReturn(Optional.empty());
 
-        final Optional<Equipment> foundEquipment = equipmentService.findById(1L);
+        final Optional<Equipment> foundEquipment = equipmentService.findById(1);
 
-        verify(equipmentRepository, times(1)).findById(1L);
+        verify(equipmentRepository, times(1)).findById(1);
 
         assertEquals(Optional.empty(), foundEquipment);
     }
@@ -87,43 +100,37 @@ public class EquipmentServiceTest {
     @DisplayName("Should save an equipment entity.")
     void createEquipmentTest() {
 
-        final Equipment equipment = new Equipment(1L, "Navigation", new HashSet<>());
+        when(equipmentRepository.save(firstEquipment)).thenReturn(firstEquipment);
 
-        when(equipmentRepository.save(equipment)).thenReturn(equipment);
+        final Equipment foundEquipment = equipmentService.save(firstEquipment);
 
-        final Equipment foundEquipment = equipmentService.save(equipment);
+        verify(equipmentRepository, times(1)).save(firstEquipment);
 
-        verify(equipmentRepository, times(1)).save(equipment);
-
-        assertEquals(equipment, foundEquipment);
+        assertEquals(firstEquipment, foundEquipment);
     }
 
     @Test
     @DisplayName("Should update an equipment entity.")
     void updateEquipmentTest() {
 
-        final Equipment equipment = new Equipment(1L, "Climate control", new HashSet<>());
+        when(equipmentRepository.save(firstEquipment)).thenReturn(firstEquipment);
 
-        when(equipmentRepository.save(equipment)).thenReturn(equipment);
+        equipmentService.save(firstEquipment);
+        firstEquipment.setDescription("Dual zone climate control");
+        equipmentService.update(firstEquipment, 1);
 
-        equipmentService.save(equipment);
-        equipment.setDescription("Dual zone climate control");
-        equipmentService.update(equipment, 1L);
+        verify(equipmentRepository, times(2)).save(firstEquipment);
 
-        verify(equipmentRepository, times(2)).save(equipment);
-
-        assertEquals("Dual zone climate control", equipment.getDescription());
+        assertEquals("Dual zone climate control", firstEquipment.getDescription());
     }
 
     @Test
     @DisplayName("Should delete an equipment entity.")
     void deleteEquipmentTest() {
 
-        final Equipment equipment = new Equipment(1L, "Navigation", new HashSet<>());
+        equipmentService.save(firstEquipment);
+        equipmentService.delete(firstEquipment.getId());
 
-        equipmentService.save(equipment);
-        equipmentService.delete(equipment.getId());
-
-        verify(equipmentRepository, times(1)).deleteById(equipment.getId());
+        verify(equipmentRepository, times(1)).deleteById(firstEquipment.getId());
     }
 }

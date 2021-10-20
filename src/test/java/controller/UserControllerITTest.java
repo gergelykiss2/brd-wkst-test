@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.List;
 
 import static controller.TestUtil.sameInstant;
@@ -32,8 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerITTest {
 
-    @Autowired
-    private EntityManager em;
+    @Autowired private EntityManager em;
 
     @Autowired private MockMvc restUserControllerMockMvc;
 
@@ -43,22 +41,20 @@ class UserControllerITTest {
 
     private User user;
 
-    public static User createEntity(final EntityManager em) {
-        return new User(
-                1L,
-                "Test",
-                "User 1",
-                "test.user2@example.com",
-                ZonedDateTime.now(),
-                "Birth City",
-                "123456789",
-                new HashSet<>(),
-                true);
-    }
-
     @BeforeEach
     void initTest() {
-        user = createEntity(em);
+        this.user =
+                User.builder()
+                        .firstName("Test")
+                        .lastName("User 1")
+                        .email("test.user1@example.com")
+                        .birthDate(ZonedDateTime.now())
+                        .birthPlace("Birth City")
+                        .phoneNumber("123456789")
+                        .active(true)
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
     }
 
     @Test
@@ -236,7 +232,9 @@ class UserControllerITTest {
                 .andExpect(jsonPath("$.[*].firstName").value(hasItem(user.getFirstName())))
                 .andExpect(jsonPath("$.[*].lastName").value(hasItem(user.getLastName())))
                 .andExpect(jsonPath("$.[*].email").value(hasItem(user.getEmail())))
-                .andExpect(jsonPath("$.[*].birthDate").value(hasItem(sameInstant(user.getBirthDate()))))
+                .andExpect(
+                        jsonPath("$.[*].birthDate")
+                                .value(hasItem(sameInstant(user.getBirthDate()))))
                 .andExpect(jsonPath("$.[*].birthPlace").value(hasItem(user.getBirthPlace())))
                 .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(user.getPhoneNumber())))
                 .andExpect(jsonPath("$.[*].active").value(hasItem(user.getActive())));
@@ -273,9 +271,7 @@ class UserControllerITTest {
 
         // Delete the user entity
         restUserControllerMockMvc
-                .perform(
-                        delete("/api/users/{id}", user.getId())
-                                .accept(MediaType.APPLICATION_JSON))
+                .perform(delete("/api/users/{id}", user.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
         assertThat(userRepository.findAll()).hasSize(userDatabaseSizeBeforeDelete - 1);

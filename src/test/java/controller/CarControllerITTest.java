@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 
@@ -42,21 +43,20 @@ class CarControllerITTest {
 
     private Car car;
 
-    public static Car createEntity(final EntityManager em) {
-        return new Car(
-                1L,
-                "ABC123",
-                "Ford",
-                "S-Max",
-                FuelType.DIESEL,
-                CarStatus.AVAILABLE,
-                new HashSet<>(),
-                new HashSet<>());
-    }
-
     @BeforeEach
     void initTest() {
-        car = createEntity(em);
+        this.car =
+                Car.builder()
+                        .licensePlate("ABC123")
+                        .make("Ford")
+                        .model("S-Max")
+                        .fuelType(FuelType.DIESEL)
+                        .carStatus(CarStatus.AVAILABLE)
+                        .reservations(new HashSet<>())
+                        .equipments(new HashSet<>())
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
     }
 
     @Test

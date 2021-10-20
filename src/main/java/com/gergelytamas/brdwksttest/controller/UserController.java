@@ -6,6 +6,7 @@ import com.gergelytamas.brdwksttest.service.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Validated
 @RequestMapping("/api/users")
 public class UserController {
 
@@ -46,7 +48,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> update(
-            @Valid @RequestBody final UserDTO userDTO, @PathVariable final Long id) {
+            @Valid @RequestBody final UserDTO userDTO, @PathVariable final Integer id) {
         log.debug("REST request to update User : {}", userDTO);
 
         if (userDTO.getId() == null) {
@@ -68,7 +70,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> findById(@PathVariable final Long id) {
+    public ResponseEntity<UserDTO> findById(@PathVariable final Integer id) {
         log.debug("REST request to get User : {}", id);
         return ResponseEntity.of(this.userService.findById(id).map(userMapper::toDto));
     }
@@ -87,7 +89,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable final Long id) {
+    public ResponseEntity<String> delete(@PathVariable final Integer id) {
         log.debug("REST request to delete User : {}", id);
         this.userService.delete(id);
         return ResponseEntity.noContent()

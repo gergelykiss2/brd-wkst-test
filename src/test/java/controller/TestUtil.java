@@ -28,6 +28,10 @@ public final class TestUtil {
         return mapper.writeValueAsBytes(object);
     }
 
+    public static ZonedDateTimeMatcher sameInstant(ZonedDateTime date) {
+        return new ZonedDateTimeMatcher(date);
+    }
+
     public static class ZonedDateTimeMatcher extends TypeSafeDiagnosingMatcher<String> {
 
         private ZonedDateTime date;
@@ -57,9 +61,5 @@ public final class TestUtil {
         public void describeTo(Description description) {
             description.appendText("a String representing the same Instant as ").appendValue(date);
         }
-    }
-
-    public static ZonedDateTimeMatcher sameInstant(ZonedDateTime date) {
-        return new ZonedDateTimeMatcher(date);
     }
 }

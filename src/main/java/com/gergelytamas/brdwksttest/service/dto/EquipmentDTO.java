@@ -14,10 +14,9 @@ import java.util.Set;
 @Setter
 public class EquipmentDTO implements Serializable {
 
-    private Long id;
+    private Integer id;
 
-    @NotBlank
-    private String description;
+    @NotBlank private String description;
 
     @JsonIgnore private Set<Car> cars = new HashSet<>();
 }

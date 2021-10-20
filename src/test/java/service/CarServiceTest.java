@@ -13,8 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,13 +24,41 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CarServiceTest {
 
-    CarService carService;
+    private CarService carService;
 
-    @Mock CarRepository carRepository;
+    @Mock private CarRepository carRepository;
+
+    private Car firstCar;
+
+    private Car secondCar;
 
     @BeforeEach
     void initTest() {
         this.carService = new CarService(carRepository);
+
+        this.firstCar =
+                Car.builder()
+                        .id(1)
+                        .licensePlate("ABC123")
+                        .make("Ford")
+                        .model("S-Max")
+                        .fuelType(FuelType.DIESEL)
+                        .carStatus(CarStatus.AVAILABLE)
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
+
+        this.secondCar =
+                Car.builder()
+                        .id(1)
+                        .licensePlate("DEF456")
+                        .make("Opel")
+                        .model("Astra")
+                        .fuelType(FuelType.GASOLINE)
+                        .carStatus(CarStatus.IN_SERVICE)
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
     }
 
     @Test
@@ -38,27 +66,6 @@ class CarServiceTest {
     void foundAllCarsTest() {
 
         final List<Car> cars = new ArrayList<>();
-        final Car firstCar =
-                new Car(
-                        1L,
-                        "ABC123",
-                        "Ford",
-                        "S-Max",
-                        FuelType.DIESEL,
-                        CarStatus.AVAILABLE,
-                        new HashSet<>(),
-                        new HashSet<>());
-        final Car secondCar =
-                new Car(
-                        2L,
-                        "DEF456",
-                        "Ford",
-                        "Galaxy",
-                        FuelType.DIESEL,
-                        CarStatus.AVAILABLE,
-                        new HashSet<>(),
-                        new HashSet<>());
-
         cars.add(firstCar);
         cars.add(secondCar);
 
@@ -77,22 +84,11 @@ class CarServiceTest {
     @DisplayName("Should found car by ID.")
     void foundCarByIdTest() throws NotFoundException {
 
-        when(carRepository.findById(1L))
-                .thenReturn(
-                        Optional.of(
-                                new Car(
-                                        1L,
-                                        "ABC123",
-                                        "Ford",
-                                        "S-Max",
-                                        FuelType.DIESEL,
-                                        CarStatus.AVAILABLE,
-                                        new HashSet<>(),
-                                        new HashSet<>())));
+        when(carRepository.findById(1)).thenReturn(Optional.of(firstCar));
 
-        final Car car = carService.findById(1L).orElseThrow(NotFoundException::new);
+        final Car car = carService.findById(1).orElseThrow(NotFoundException::new);
 
-        verify(carRepository, times(1)).findById(1L);
+        verify(carRepository, times(1)).findById(1);
 
         assertEquals("ABC123", car.getLicensePlate());
         assertEquals("Ford", car.getMake());
@@ -105,11 +101,11 @@ class CarServiceTest {
     @DisplayName("Should not found a car by ID.")
     void notFoundCarByID() {
 
-        when(carRepository.findById(1L)).thenReturn(Optional.empty());
+        when(carRepository.findById(1)).thenReturn(Optional.empty());
 
-        final Optional<Car> foundCar = carService.findById(1L);
+        final Optional<Car> foundCar = carService.findById(1);
 
-        verify(carRepository, times(1)).findById(1L);
+        verify(carRepository, times(1)).findById(1);
 
         assertEquals(Optional.empty(), foundCar);
     }
@@ -121,27 +117,6 @@ class CarServiceTest {
     void foundAllCarsByAvailability() {
 
         final List<Car> cars = new ArrayList<>();
-        final Car firstCar =
-                new Car(
-                        1L,
-                        "ABC123",
-                        "Ford",
-                        "S-Max",
-                        FuelType.DIESEL,
-                        CarStatus.AVAILABLE,
-                        new HashSet<>(),
-                        new HashSet<>());
-        final Car secondCar =
-                new Car(
-                        2L,
-                        "DEF456",
-                        "Ford",
-                        "Galaxy",
-                        FuelType.DIESEL,
-                        CarStatus.IN_SERVICE,
-                        new HashSet<>(),
-                        new HashSet<>());
-
         cars.add(firstCar);
         cars.add(secondCar);
 
@@ -160,27 +135,6 @@ class CarServiceTest {
     void foundAllCarsByMake() {
 
         final List<Car> cars = new ArrayList<>();
-        final Car firstCar =
-                new Car(
-                        1L,
-                        "ABC123",
-                        "Ford",
-                        "S-Max",
-                        FuelType.DIESEL,
-                        CarStatus.AVAILABLE,
-                        new HashSet<>(),
-                        new HashSet<>());
-        final Car secondCar =
-                new Car(
-                        2L,
-                        "DEF456",
-                        "Opel",
-                        "Astra",
-                        FuelType.DIESEL,
-                        CarStatus.IN_SERVICE,
-                        new HashSet<>(),
-                        new HashSet<>());
-
         cars.add(firstCar);
         cars.add(secondCar);
 
@@ -198,74 +152,41 @@ class CarServiceTest {
     @DisplayName("Should save a car entity.")
     void createCarTest() {
 
-        final Car car =
-                new Car(
-                        1L,
-                        "ABC123",
-                        "Ford",
-                        "S-Max",
-                        FuelType.DIESEL,
-                        CarStatus.AVAILABLE,
-                        new HashSet<>(),
-                        new HashSet<>());
+        when(carRepository.save(firstCar)).thenReturn(firstCar);
 
-        when(carRepository.save(car)).thenReturn(car);
+        final Car foundCar = carService.save(firstCar);
 
-        final Car foundCar = carService.save(car);
+        verify(carRepository, times(1)).save(firstCar);
 
-        verify(carRepository, times(1)).save(car);
-
-        assertEquals(car, foundCar);
+        assertEquals(firstCar, foundCar);
     }
 
     @Test
     @DisplayName("Should update a car entity.")
     void updateCarTest() {
 
-        final Car car =
-                new Car(
-                        1L,
-                        "ABC123",
-                        "Ford",
-                        "S-Max",
-                        FuelType.DIESEL,
-                        CarStatus.AVAILABLE,
-                        new HashSet<>(),
-                        new HashSet<>());
+        when(carRepository.save(firstCar)).thenReturn(firstCar);
 
-        when(carRepository.save(car)).thenReturn(car);
+        carService.save(firstCar);
+        firstCar.setLicensePlate("DEF456");
+        carService.update(firstCar, 1);
 
-        carService.save(car);
-        car.setLicensePlate("DEF456");
-        carService.update(car, 1L);
+        verify(carRepository, times(2)).save(firstCar);
 
-        verify(carRepository, times(2)).save(car);
-
-        assertEquals("DEF456", car.getLicensePlate());
-        assertEquals("Ford", car.getMake());
-        assertEquals("S-Max", car.getModel());
-        assertEquals(FuelType.DIESEL, car.getFuelType());
-        assertEquals(CarStatus.AVAILABLE, car.getCarStatus());
+        assertEquals("DEF456", firstCar.getLicensePlate());
+        assertEquals("Ford", firstCar.getMake());
+        assertEquals("S-Max", firstCar.getModel());
+        assertEquals(FuelType.DIESEL, firstCar.getFuelType());
+        assertEquals(CarStatus.AVAILABLE, firstCar.getCarStatus());
     }
 
     @Test
     @DisplayName("Should delete a car entity.")
     void deleteCarTest() {
 
-        final Car car =
-                new Car(
-                        1L,
-                        "ABC123",
-                        "Ford",
-                        "S-Max",
-                        FuelType.DIESEL,
-                        CarStatus.AVAILABLE,
-                        new HashSet<>(),
-                        new HashSet<>());
+        carService.save(firstCar);
+        carService.delete(firstCar.getId());
 
-        carService.save(car);
-        carService.delete(car.getId());
-
-        verify(carRepository, times(1)).deleteById(car.getId());
+        verify(carRepository, times(1)).deleteById(firstCar.getId());
     }
 }

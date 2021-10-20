@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,13 +24,38 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    ReservationService reservationService;
+    private ReservationService reservationService;
 
-    @Mock ReservationRepository reservationRepository;
+    @Mock private ReservationRepository reservationRepository;
+
+    private Reservation firstReservation;
+    private Reservation secondReservation;
 
     @BeforeEach
     void initTest() {
         this.reservationService = new ReservationService(reservationRepository);
+
+        this.firstReservation =
+                Reservation.builder()
+                        .id(1)
+                        .dateFrom(ZonedDateTime.now())
+                        .dateTo(ZonedDateTime.now())
+                        .reservationStatus(ReservationStatus.BOOKED)
+                        .reservationType(ReservationType.WORK)
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
+
+        this.secondReservation =
+                Reservation.builder()
+                        .id(2)
+                        .dateFrom(ZonedDateTime.now().plusDays(2))
+                        .dateTo(ZonedDateTime.now().plusDays(4))
+                        .reservationStatus(ReservationStatus.IN_PROGRESS)
+                        .reservationType(ReservationType.PERSONAL)
+                        .createdOn(ZonedDateTime.now())
+                        .modifiedOn(ZonedDateTime.now())
+                        .build();
     }
 
     @Test
@@ -39,25 +63,6 @@ class ReservationServiceTest {
     void foundAllReservationsTest() {
 
         final List<Reservation> reservations = new ArrayList<>();
-        final Reservation firstReservation =
-                new Reservation(
-                        1L,
-                        ZonedDateTime.now(),
-                        ZonedDateTime.now().plusDays(1),
-                        ReservationStatus.BOOKED,
-                        ReservationType.WORK,
-                        null,
-                        null);
-        final Reservation secondReservation =
-                new Reservation(
-                        2L,
-                        ZonedDateTime.now(),
-                        ZonedDateTime.now().plusDays(1),
-                        ReservationStatus.IN_PROGRESS,
-                        ReservationType.PERSONAL,
-                        null,
-                        null);
-
         reservations.add(firstReservation);
         reservations.add(secondReservation);
 
@@ -76,35 +81,25 @@ class ReservationServiceTest {
     @DisplayName("Should found reservation by ID.")
     void foundReservationByIdTest() {
 
-        final Reservation reservation =
-                new Reservation(
-                        1L,
-                        ZonedDateTime.now(),
-                        ZonedDateTime.now().plusDays(1),
-                        ReservationStatus.BOOKED,
-                        ReservationType.WORK,
-                        null,
-                        null);
-
-        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(1)).thenReturn(Optional.of(firstReservation));
 
         final Reservation foundReservation =
-                reservationService.findById(1L).orElseThrow(NotFoundException::new);
+                reservationService.findById(1).orElseThrow(NotFoundException::new);
 
-        verify(reservationRepository, times(1)).findById(1L);
+        verify(reservationRepository, times(1)).findById(1);
 
-        assertEquals(reservation, foundReservation);
+        assertEquals(firstReservation, foundReservation);
     }
 
     @Test
     @DisplayName("Should not found reservation by ID.")
     void notFoundReservationByIdTest() {
 
-        when(reservationRepository.findById(1L)).thenReturn(Optional.empty());
+        when(reservationRepository.findById(1)).thenReturn(Optional.empty());
 
-        final Optional<Reservation> foundReservation = reservationService.findById(1L);
+        final Optional<Reservation> foundReservation = reservationService.findById(1);
 
-        verify(reservationRepository, times(1)).findById(1L);
+        verify(reservationRepository, times(1)).findById(1);
 
         assertEquals(Optional.empty(), foundReservation);
     }
@@ -113,67 +108,37 @@ class ReservationServiceTest {
     @DisplayName("Should save a reservation entity")
     void createReservationTest() {
 
-        final Reservation reservation =
-                new Reservation(
-                        1L,
-                        ZonedDateTime.now(),
-                        ZonedDateTime.now().plusDays(1),
-                        ReservationStatus.BOOKED,
-                        ReservationType.WORK,
-                        null,
-                        null);
+        when(reservationRepository.save(firstReservation)).thenReturn(firstReservation);
 
-        when(reservationRepository.save(reservation)).thenReturn(reservation);
+        final Reservation savedReservation = reservationService.save(firstReservation);
 
-        final Reservation savedReservation = reservationService.save(reservation);
+        verify(reservationRepository, times(1)).save(firstReservation);
 
-        verify(reservationRepository, times(1)).save(reservation);
-
-        assertEquals(reservation, savedReservation);
+        assertEquals(firstReservation, savedReservation);
     }
 
     @Test
     @DisplayName("Should update a reservation entity")
     void updateReservationTest() {
 
-        final Reservation reservation =
-                new Reservation(
-                        1L,
-                        ZonedDateTime.now(),
-                        ZonedDateTime.now().plusDays(1),
-                        ReservationStatus.BOOKED,
-                        ReservationType.WORK,
-                        null,
-                        null);
+        when(reservationRepository.save(firstReservation)).thenReturn(firstReservation);
 
-        when(reservationRepository.save(reservation)).thenReturn(reservation);
+        reservationService.save(firstReservation);
+        firstReservation.setReservationStatus(ReservationStatus.IN_PROGRESS);
+        reservationService.save(firstReservation);
 
-        reservationService.save(reservation);
-        reservation.setReservationStatus(ReservationStatus.IN_PROGRESS);
-        reservationService.save(reservation);
+        verify(reservationRepository, times(2)).save(firstReservation);
 
-        verify(reservationRepository, times(2)).save(reservation);
-
-        assertEquals(reservation.getReservationStatus(), ReservationStatus.IN_PROGRESS);
+        assertEquals(ReservationStatus.IN_PROGRESS, firstReservation.getReservationStatus());
     }
 
     @Test
     @DisplayName("Should delete a reservation entity.")
     void deleteReservationTest() {
 
-        final Reservation reservation =
-                new Reservation(
-                        1L,
-                        ZonedDateTime.now(),
-                        ZonedDateTime.now().plusDays(1),
-                        ReservationStatus.BOOKED,
-                        ReservationType.WORK,
-                        null,
-                        null);
+        reservationService.save(firstReservation);
+        reservationService.delete(firstReservation.getId());
 
-        reservationService.save(reservation);
-        reservationService.delete(reservation.getId());
-
-        verify(reservationRepository, times(1)).deleteById(reservation.getId());
+        verify(reservationRepository, times(1)).deleteById(firstReservation.getId());
     }
 }

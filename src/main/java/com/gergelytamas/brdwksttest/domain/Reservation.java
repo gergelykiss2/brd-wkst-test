@@ -3,24 +3,25 @@ package com.gergelytamas.brdwksttest.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gergelytamas.brdwksttest.domain.enumeration.ReservationStatus;
 import com.gergelytamas.brdwksttest.domain.enumeration.ReservationType;
-import com.sun.istack.NotNull;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Getter
-@Setter
-@Table(name = "reservation")
+@Data
+@NoArgsConstructor
+@Table(name = "reservation", schema = "public")
 @SequenceGenerator(
         name = "reservation_id_seq_gen",
         sequenceName = "reservation_id_seq",
         allocationSize = 1)
-@NoArgsConstructor
 public class Reservation extends BaseEntity implements Serializable {
 
     @NotNull
@@ -49,14 +50,18 @@ public class Reservation extends BaseEntity implements Serializable {
     @JsonIgnoreProperties(value = "reservations", allowSetters = true)
     private Car car;
 
+    @Builder
     public Reservation(
-            final Long id,
+            final Integer id,
             final ZonedDateTime dateFrom,
             final ZonedDateTime dateTo,
             final ReservationStatus reservationStatus,
             final ReservationType reservationType,
             final User user,
-            final Car car) {
+            final Car car,
+            final ZonedDateTime createdOn,
+            final ZonedDateTime modifiedOn) {
+        super(id, createdOn, modifiedOn);
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
         this.reservationStatus = reservationStatus;

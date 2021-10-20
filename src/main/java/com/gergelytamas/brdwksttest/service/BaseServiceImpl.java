@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 @Transactional
 @RequiredArgsConstructor
-public class BaseServiceImpl<S extends BaseEntity, U extends JpaRepository<S, Long>>
+public class BaseServiceImpl<S extends BaseEntity, U extends JpaRepository<S, Integer>>
         implements BaseService<S> {
 
     protected final U repository;
@@ -26,7 +26,7 @@ public class BaseServiceImpl<S extends BaseEntity, U extends JpaRepository<S, Lo
     }
 
     @Override
-    public Optional<S> findById(final Long id) {
+    public Optional<S> findById(final Integer id) {
         return this.repository.findById(id);
     }
 
@@ -36,7 +36,7 @@ public class BaseServiceImpl<S extends BaseEntity, U extends JpaRepository<S, Lo
     }
 
     @Override
-    public S update(final S s, final Long id) {
+    public S update(final S s, final Integer id) {
 
         if (id == null) {
             throw new MissingIdException("Missing ID!");
@@ -46,7 +46,7 @@ public class BaseServiceImpl<S extends BaseEntity, U extends JpaRepository<S, Lo
     }
 
     @Override
-    public void delete(final Long id) {
+    public void delete(final Integer id) {
         this.repository.deleteById(id);
     }
 }
